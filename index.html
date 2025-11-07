@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Diagnosis System - Wraith Developer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section, .info-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .symptom-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .symptom-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .symptom-card.selected {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .result-section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #27ae60;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:before {
+            content: "✅";
+            margin-right: 10px;
+        }
+
+        .doctor-info {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Medical Diagnosis System</h1>
+            <p>Advanced AI-Powered Medical Diagnosis & Treatment Recommendations</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>Patient Information</h2>
+                <form id="diagnosisForm">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name:</label>
+                        <input type="text" id="patientName" required placeholder="Enter patient name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Symptoms:</label>
+                        <div class="symptoms-grid" id="symptomsGrid">
+                            <!-- Symptoms will be loaded by JavaScript -->
+                        </div>
+                        <input type="text" id="customSymptoms" placeholder="Or enter custom symptoms (comma separated)">
+                    </div>
+
+                    <button type="submit" class="btn">Start Diagnosis</button>
+                </form>
+
+                <div class="result-section" id="resultSection">
+                    <h3>Diagnosis Results</h3>
+                    <div id="diagnosisResults"></div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>About This System</h2>
+                <p>This AI-powered medical diagnosis system provides preliminary health assessments based on reported symptoms.</p>
+                
+                <h3>Features:</h3>
+                <ul class="feature-list">
+                    <li>Multi-language Support (English/Urdu)</li>
+                    <li>Comprehensive Symptom Database</li>
+                    <li>Instant Diagnosis</li>
+                    <li>Treatment Recommendations</li>
+                    <li>Professional Reporting</li>
+                    <li>User-friendly Interface</li>
+                </ul>
+
+                <div class="doctor-info">
+                    <h3>👨‍⚕️ Doctor Information</h3>
+                    <p><strong>Dr. Wraith Developer</strong></p>
+                    <p>Medical AI Specialist</p>
+                </div>
+
+                <div style="margin-top: 20px; text-align: center;">
+                    <p><strong>Note:</strong> This is an automated system. Always consult with healthcare professionals for medical advice.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Symptoms database
+        const symptomsDB = {
+            'fever': { name: 'Fever', urdu: 'بخار' },
+            'cough': { name: 'Cough', urdu: 'کھانسی' },
+            'headache': { name: 'Headache', urdu: 'سر درد' },
+            'stomach_pain': { name: 'Stomach Pain', urdu: 'پیٹ درد' },
+            'chest_pain': { name: 'Chest Pain', urdu: 'سینے میں درد' },
+            'cold': { name: 'Cold', urdu: 'نزلہ' },
+            'weakness': { name: 'Weakness', urdu: 'کمزوری' },
+            'vomiting': { name: 'Vomiting', urdu: 'الٹی' },
+            'diarrhea': { name: 'Diarrhea', urdu: 'اسہال' },
+            'rash': { name: 'Rash', urdu: 'خارش' }
+        };
+
+        // Diseases and treatments database
+        const diagnosisDB = {
+            'fever': {
+                diseases: ['Viral Fever', 'Malaria', 'Typhoid'],
+                treatments: {
+                    'Viral Fever': 'Paracetamol 500mg, Rest, Hydration',
+                    'Malaria': 'Chloroquine, Antipyretics, Rest',
+                    'Typhoid': 'Antibiotics, Rest, Soft diet'
+                }
+            },
+            'cough': {
+                diseases: ['Common Cold', 'Bronchitis', 'COVID-19'],
+                treatments: {
+                    'Common Cold': 'Cough Syrup, Steam inhalation',
+                    'Bronchitis': 'Bronchodilators, Antibiotics',
+                    'COVID-19': 'Isolation, Medical consultation'
+                }
+            }
+            // Add more symptoms here...
+        };
+
+        // Initialize symptoms grid
+        function initializeSymptoms() {
+            const grid = document.getElementById('symptomsGrid');
+            for (const [key, symptom] of Object.entries(symptomsDB)) {
+                const card = document.createElement('div');
+                card.className = 'symptom-card';
+                card.innerHTML = `
+                    <strong>${symptom.name}</strong>
+                    <br>
+                    <small>${symptom.urdu}</small>
+                `;
+                card.onclick = () => toggleSymptom(key, card);
+                grid.appendChild(card);
+            }
+        }
+
+        let selectedSymptoms = [];
+
+        function toggleSymptom(symptom, element) {
+            const index = selectedSymptoms.indexOf(symptom);
+            if (index === -1) {
+                selectedSymptoms.push(symptom);
+                element.classList.add('selected');
+            } else {
+                selectedSymptoms.splice(index, 1);
+                element.classList.remove('selected');
+            }
+        }
+
+        // Form submission
+        document.getElementById('diagnosisForm').onsubmit = function(e) {
+            e.preventDefault();
+            
+            const patientName = document.getElementById('patientName').value;
+            const customSymptoms = document.getElementById('customSymptoms').value;
+            
+            if (!patientName) {
+                alert('Please enter patient name');
+                return;
+            }
+
+            if (selectedSymptoms.length === 0 && !customSymptoms) {
+                alert('Please select symptoms or enter custom symptoms');
+                return;
+            }
+
+            // Show loading
+            const resultSection = document.getElementById('resultSection');
+            const resultsDiv = document.getElementById('diagnosisResults');
+            resultSection.style.display = 'block';
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing symptoms and generating diagnosis...</p>
+                </div>
+            `;
+
+            // Simulate diagnosis process
+            setTimeout(() => {
+                generateDiagnosis(patientName, selectedSymptoms, customSymptoms);
+            }, 2000);
+        };
+
+        function generateDiagnosis(patientName, symptoms, customSymptoms) {
+            let resultsHTML = `
+                <h4>Patient: ${patientName}</h4>
+                <p><strong>Doctor:</strong> Dr. Wraith Developer</p>
+                <p><strong>Date:</strong> ${new Date().toLocaleDateString()}</p>
+                
+                <h4>Reported Symptoms:</h4>
+                <ul>
+            `;
+
+            // Add selected symptoms
+            symptoms.forEach(symptom => {
+                resultsHTML += `<li>${symptomsDB[symptom].name} (${symptomsDB[symptom].urdu})</li>`;
+            });
+
+            // Add custom symptoms
+            if (customSymptoms) {
+                customSymptoms.split(',').forEach(symptom => {
+                    resultsHTML += `<li>${symptom.trim()}</li>`;
+                });
+            }
+
+            resultsHTML += `</ul><h4>Diagnosis:</h4>`;
+
+            // Generate diagnosis for each symptom
+            symptoms.forEach(symptom => {
+                if (diagnosisDB[symptom]) {
+                    const randomDisease = diagnosisDB[symptom].diseases[0]; // Simple selection
+                    resultsHTML += `
+                        <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                            <strong>${symptomsDB[symptom].name}:</strong> ${randomDisease}<br>
+                            <strong>Treatment:</strong> ${diagnosisDB[symptom].treatments[randomDisease]}
+                        </div>
+                    `;
+                }
+            });
+
+            resultsHTML += `
+                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+                    <strong>Important Note:</strong> This is an automated diagnosis. Please consult with a qualified healthcare professional for proper medical advice.
+                </div>
+            `;
+
+            document.getElementById('diagnosisResults').innerHTML = resultsHTML;
+        }
+
+        // Initialize the application
+        window.onload = initializeSymptoms;
+    </script>
+</body>
+</html>
