@@ -1,40 +1,333 @@
-import datetime
-import os
-import time
-import sys
-
-class MedicalDiagnosisSystem:
-    def __init__(self):
-        # Fixed doctor name
-        self.doctor_name = "Dr. Wraith Developer"
-        
-        # Color codes
-        self.colors = {
-            'RED': '\033[91m',
-            'GREEN': '\033[92m',
-            'YELLOW': '\033[93m',
-            'BLUE': '\033[94m',
-            'PURPLE': '\033[95m',
-            'CYAN': '\033[96m',
-            'WHITE': '\033[97m',
-            'BOLD': '\033[1m',
-            'UNDERLINE': '\033[4m',
-            'END': '\033[0m'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Diagnosis System - Dr. Wraith Developer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        # Complete symptoms database with diagnosis, medicines and precautions
-        self.symptoms_db = {
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-section, .info-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .symptoms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .symptom-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .symptom-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .symptom-card.selected {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .result-section {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #27ae60;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature-list li:before {
+            content: "✅";
+            margin-right: 10px;
+        }
+
+        .doctor-info {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .disease-option {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .disease-option:hover {
+            border-color: #3498db;
+        }
+
+        .disease-option.selected {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .report-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border: 2px dashed #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Medical Diagnosis System</h1>
+            <p>AI-Powered Medical Diagnosis & Treatment Recommendations</p>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <h2>Patient Information</h2>
+                <form id="diagnosisForm">
+                    <div class="form-group">
+                        <label for="patientName">Patient Name:</label>
+                        <input type="text" id="patientName" required placeholder="Enter patient name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Select Symptoms:</label>
+                        <div class="symptoms-grid" id="symptomsGrid">
+                            <!-- Symptoms will be loaded by JavaScript -->
+                        </div>
+                    </div>
+
+                    <div id="diseaseSelection" style="display: none;">
+                        <h3>Select Disease for <span id="currentSymptom"></span>:</h3>
+                        <div id="diseaseOptions"></div>
+                    </div>
+
+                    <button type="button" id="diagnoseBtn" class="btn">Start Diagnosis</button>
+                </form>
+
+                <div class="result-section" id="resultSection">
+                    <h3>Diagnosis Results</h3>
+                    <div id="diagnosisResults"></div>
+                    
+                    <div class="report-section" id="reportSection" style="display: none;">
+                        <h4>Medical Report</h4>
+                        <div id="reportContent"></div>
+                        <button class="btn" onclick="downloadReport()" style="margin-top: 15px;">Download Report</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2>About This System</h2>
+                <p>This AI-powered medical diagnosis system provides preliminary health assessments based on reported symptoms.</p>
+                
+                <h3>Features:</h3>
+                <ul class="feature-list">
+                    <li>Multi-language Support (English/Urdu)</li>
+                    <li>12+ Common Symptoms Analysis</li>
+                    <li>60+ Disease Combinations</li>
+                    <li>Treatment Recommendations</li>
+                    <li>Prevention Guidelines</li>
+                    <li>Professional Medical Reports</li>
+                </ul>
+
+                <div class="doctor-info">
+                    <h3>👨‍⚕️ Doctor Information</h3>
+                    <p><strong>Dr. Wraith Developer</strong></p>
+                    <p>Medical AI Specialist</p>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 8px;">
+                    <h4>⚠️ Important Disclaimer</h4>
+                    <p>This is an automated system for educational purposes only. Always consult qualified healthcare professionals for medical advice.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Complete medical database
+        const symptomsDB = {
             'fever': {
-                'urdu_name': 'بخار',
-                'diseases': ['Viral Fever', 'Malaria', 'Typhoid', 'Dengue', 'COVID-19'],
-                'medicines': {
+                name: 'Fever',
+                urdu: 'بخار',
+                diseases: ['Viral Fever', 'Malaria', 'Typhoid', 'Dengue', 'COVID-19'],
+                treatments: {
                     'Viral Fever': 'Paracetamol 500mg, Rest, Hydration',
                     'Malaria': 'Chloroquine, Antipyretics, Rest',
                     'Typhoid': 'Antibiotics (Ciprofloxacin), Rest, Soft diet',
                     'Dengue': 'Paracetamol, Platelet monitoring, Hydration',
                     'COVID-19': 'Isolation, Paracetamol, Medical consultation'
                 },
-                'precautions': {
+                precautions: {
                     'Viral Fever': 'Avoid cold drinks, Take rest, Stay hydrated',
                     'Malaria': 'Use mosquito nets, Avoid stagnant water',
                     'Typhoid': 'Drink boiled water, Avoid street food',
@@ -43,16 +336,17 @@ class MedicalDiagnosisSystem:
                 }
             },
             'cough': {
-                'urdu_name': 'کھانسی',
-                'diseases': ['Common Cold', 'Bronchitis', 'Pneumonia', 'Asthma', 'Tuberculosis'],
-                'medicines': {
+                name: 'Cough',
+                urdu: 'کھانسی',
+                diseases: ['Common Cold', 'Bronchitis', 'Pneumonia', 'Asthma', 'Tuberculosis'],
+                treatments: {
                     'Common Cold': 'Antihistamines, Cough Syrup, Steam inhalation',
                     'Bronchitis': 'Bronchodilators, Antibiotics, Expectorants',
                     'Pneumonia': 'Antibiotics, Oxygen therapy, Hospitalization',
                     'Asthma': 'Inhalers, Bronchodilators, Avoid allergens',
                     'Tuberculosis': 'Anti-TB drugs, Long-term treatment, Isolation'
                 },
-                'precautions': {
+                precautions: {
                     'Common Cold': 'Avoid cold weather, Cover mouth, Warm liquids',
                     'Bronchitis': 'Avoid smoking, Wear mask in pollution',
                     'Pneumonia': 'Keep warm, Avoid crowds, Vaccination',
@@ -61,16 +355,17 @@ class MedicalDiagnosisSystem:
                 }
             },
             'headache': {
-                'urdu_name': 'سر درد',
-                'diseases': ['Migraine', 'Tension Headache', 'Sinusitis', 'Cluster Headache', 'Hypertension'],
-                'medicines': {
+                name: 'Headache',
+                urdu: 'سر درد',
+                diseases: ['Migraine', 'Tension Headache', 'Sinusitis', 'Cluster Headache', 'Hypertension'],
+                treatments: {
                     'Migraine': 'Ibuprofen, Rest in dark room, Avoid triggers',
                     'Tension Headache': 'Aspirin, Stress management, Massage',
                     'Sinusitis': 'Decongestants, Nasal spray, Antibiotics',
                     'Cluster Headache': 'Oxygen therapy, Triptans, Pain relievers',
                     'Hypertension': 'Blood pressure medication, Lifestyle changes'
                 },
-                'precautions': {
+                precautions: {
                     'Migraine': 'Avoid bright lights, Loud noises, Chocolate',
                     'Tension Headache': 'Reduce stress, Proper posture, Regular sleep',
                     'Sinusitis': 'Avoid allergens, Use humidifier, Steam inhalation',
@@ -79,511 +374,214 @@ class MedicalDiagnosisSystem:
                 }
             },
             'stomach pain': {
-                'urdu_name': 'پیٹ درد',
-                'diseases': ['Gastritis', 'Food Poisoning', 'Appendicitis', 'Ulcer', 'Irritable Bowel'],
-                'medicines': {
+                name: 'Stomach Pain',
+                urdu: 'پیٹ درد',
+                diseases: ['Gastritis', 'Food Poisoning', 'Appendicitis', 'Ulcer', 'Irritable Bowel'],
+                treatments: {
                     'Gastritis': 'Antacids, Avoid spicy food, Proton pump inhibitors',
                     'Food Poisoning': 'Hydration, Antibiotics if severe, Rest',
                     'Appendicitis': 'Emergency surgery required, Hospitalization',
                     'Ulcer': 'Antibiotics, Antacids, Avoid NSAIDs',
                     'Irritable Bowel': 'Diet modification, Stress management, Medication'
                 },
-                'precautions': {
+                precautions: {
                     'Gastritis': 'Avoid spicy food, Alcohol, Smoking',
                     'Food Poisoning': 'Eat fresh food, Proper hygiene, Clean water',
                     'Appendicitis': 'Immediate hospital visit, No self-medication',
                     'Ulcer': 'Avoid painkillers, Spicy food, Stress',
                     'Irritable Bowel': 'High fiber diet, Regular meals, Stress control'
                 }
-            },
-            'chest pain': {
-                'urdu_name': 'سینے میں درد',
-                'diseases': ['Angina', 'Acid Reflux', 'Anxiety', 'Heart Attack', 'Pulmonary Embolism'],
-                'medicines': {
-                    'Angina': 'Nitroglycerin, Emergency care, Lifestyle changes',
-                    'Acid Reflux': 'Antacids, Proton pump inhibitors, Diet changes',
-                    'Anxiety': 'Relaxation techniques, Counseling, Medication',
-                    'Heart Attack': 'EMERGENCY - Call ambulance, Aspirin, Hospital',
-                    'Pulmonary Embolism': 'EMERGENCY - Hospitalization, Blood thinners'
-                },
-                'precautions': {
-                    'Angina': 'Avoid exertion, Stop smoking, Healthy diet',
-                    'Acid Reflux': 'Avoid fatty foods, Eat small meals, No late meals',
-                    'Anxiety': 'Meditation, Regular exercise, Avoid caffeine',
-                    'Heart Attack': 'Immediate medical help, Chew aspirin, Rest',
-                    'Pulmonary Embolism': 'Emergency care, Avoid long sitting, Movement'
-                }
-            },
-            'cold': {
-                'urdu_name': 'نزلہ',
-                'diseases': ['Common Cold', 'Allergic Rhinitis', 'Sinus Infection', 'Flu', 'COVID-19'],
-                'medicines': {
-                    'Common Cold': 'Decongestants, Vitamin C, Rest',
-                    'Allergic Rhinitis': 'Antihistamines, Nasal spray, Avoid allergens',
-                    'Sinus Infection': 'Antibiotics, Steam inhalation, Pain relievers',
-                    'Flu': 'Antiviral drugs, Rest, Hydration',
-                    'COVID-19': 'Isolation, Symptomatic treatment, Medical care'
-                },
-                'precautions': {
-                    'Common Cold': 'Wash hands, Avoid sick people, Stay warm',
-                    'Allergic Rhinitis': 'Avoid pollen, Dust, Animal dander',
-                    'Sinus Infection': 'Steam inhalation, Hydration, Rest',
-                    'Flu': 'Vaccination, Avoid crowds, Good hygiene',
-                    'COVID-19': 'Mask, Social distancing, Sanitization'
-                }
-            },
-            'weakness': {
-                'urdu_name': 'کمزوری',
-                'diseases': ['Anemia', 'Fatigue Syndrome', 'Vitamin Deficiency', 'Diabetes', 'Thyroid Issues'],
-                'medicines': {
-                    'Anemia': 'Iron supplements, Balanced diet, Vitamin B12',
-                    'Fatigue Syndrome': 'Rest, Stress management, Gradual exercise',
-                    'Vitamin Deficiency': 'Multivitamins, Proper nutrition, Sunlight',
-                    'Diabetes': 'Blood sugar control, Medication, Diet management',
-                    'Thyroid Issues': 'Thyroid medication, Regular monitoring'
-                },
-                'precautions': {
-                    'Anemia': 'Iron-rich diet, Vitamin C, Regular checkups',
-                    'Fatigue Syndrome': 'Regular sleep, Balanced diet, Stress reduction',
-                    'Vitamin Deficiency': 'Balanced diet, Sun exposure, Supplements',
-                    'Diabetes': 'Regular monitoring, Diet control, Exercise',
-                    'Thyroid Issues': 'Regular medication, Checkups, Balanced diet'
-                }
-            },
-            'vomiting': {
-                'urdu_name': 'الٹی',
-                'diseases': ['Food Poisoning', 'Gastroenteritis', 'Migraine', 'Pregnancy', 'Motion Sickness'],
-                'medicines': {
-                    'Food Poisoning': 'Hydration, Rest, Anti-emetics',
-                    'Gastroenteritis': 'ORS, Rest, Bland diet',
-                    'Migraine': 'Anti-emetics, Rest, Pain relief',
-                    'Pregnancy': 'Small frequent meals, Ginger, Medical advice',
-                    'Motion Sickness': 'Anti-emetics, Avoid reading in vehicle'
-                },
-                'precautions': {
-                    'Food Poisoning': 'Fresh food, Clean water, Hand hygiene',
-                    'Gastroenteritis': 'ORS, Light diet, Rest',
-                    'Migraine': 'Avoid triggers, Rest, Dark room',
-                    'Pregnancy': 'Small meals, Avoid strong smells, Rest',
-                    'Motion Sickness': 'Look at horizon, Fresh air, Light meals'
-                }
-            },
-            'diarrhea': {
-                'urdu_name': 'اسہال',
-                'diseases': ['Gastroenteritis', 'Food Poisoning', 'Irritable Bowel', 'Infection', 'Lactose Intolerance'],
-                'medicines': {
-                    'Gastroenteritis': 'ORS, Rest, Avoid dairy',
-                    'Food Poisoning': 'Hydration, Antibiotics if bacterial',
-                    'Irritable Bowel': 'Diet changes, Stress management',
-                    'Infection': 'Antibiotics, Hydration, Medical care',
-                    'Lactose Intolerance': 'Avoid dairy, Lactase enzymes'
-                },
-                'precautions': {
-                    'Gastroenteritis': 'ORS, Light diet, Hygiene',
-                    'Food Poisoning': 'Clean food, Water, Utensils',
-                    'Irritable Bowel': 'Identify triggers, Stress management',
-                    'Infection': 'Medical care, Hydration, Rest',
-                    'Lactose Intolerance': 'Dairy-free diet, Lactose-free products'
-                }
-            },
-            'rash': {
-                'urdu_name': 'خارش',
-                'diseases': ['Allergy', 'Eczema', 'Fungal Infection', 'Measles', 'Contact Dermatitis'],
-                'medicines': {
-                    'Allergy': 'Antihistamines, Avoid allergens, Creams',
-                    'Eczema': 'Moisturizers, Steroid creams, Avoid triggers',
-                    'Fungal Infection': 'Antifungal creams, Oral medication',
-                    'Measles': 'Symptomatic treatment, Rest, Isolation',
-                    'Contact Dermatitis': 'Avoid irritants, Steroid creams'
-                },
-                'precautions': {
-                    'Allergy': 'Identify allergens, Avoid triggers, Clean environment',
-                    'Eczema': 'Moisturize, Avoid harsh soaps, Cotton clothes',
-                    'Fungal Infection': 'Keep dry, Clean clothes, Avoid sharing',
-                    'Measles': 'Vaccination, Isolation, Rest',
-                    'Contact Dermatitis': 'Avoid irritants, Protective gloves'
-                }
-            },
-            'body pain': {
-                'urdu_name': 'جسم میں درد',
-                'diseases': ['Viral Infection', 'Arthritis', 'Fibromyalgia', 'Flu', 'Vitamin Deficiency'],
-                'medicines': {
-                    'Viral Infection': 'Pain relievers, Rest, Hydration',
-                    'Arthritis': 'Anti-inflammatory drugs, Physical therapy',
-                    'Fibromyalgia': 'Pain management, Exercise, Stress reduction',
-                    'Flu': 'Antiviral medication, Rest, Pain relievers',
-                    'Vitamin Deficiency': 'Vitamin supplements, Balanced diet'
-                },
-                'precautions': {
-                    'Viral Infection': 'Rest, Hydration, Balanced diet',
-                    'Arthritis': 'Regular exercise, Weight management, Joint care',
-                    'Fibromyalgia': 'Stress management, Gentle exercise, Sleep',
-                    'Flu': 'Rest, Hydration, Vaccination',
-                    'Vitamin Deficiency': 'Balanced diet, Sun exposure, Supplements'
-                }
-            },
-            'sore throat': {
-                'urdu_name': 'گلے کی خراش',
-                'diseases': ['Strep Throat', 'Tonsillitis', 'Viral Pharyngitis', 'Allergy', 'Acid Reflux'],
-                'medicines': {
-                    'Strep Throat': 'Antibiotics, Pain relievers, Warm salt water',
-                    'Tonsillitis': 'Antibiotics, Pain medication, Rest',
-                    'Viral Pharyngitis': 'Pain relievers, Warm liquids, Rest',
-                    'Allergy': 'Antihistamines, Avoid allergens',
-                    'Acid Reflux': 'Antacids, Diet modification, Elevate head'
-                },
-                'precautions': {
-                    'Strep Throat': 'Rest, Warm liquids, Avoid cold drinks',
-                    'Tonsillitis': 'Soft diet, Rest, Hydration',
-                    'Viral Pharyngitis': 'Warm liquids, Rest, Avoid smoking',
-                    'Allergy': 'Avoid allergens, Clean environment',
-                    'Acid Reflux': 'Small meals, Avoid spicy food, No late meals'
-                }
+            }
+        };
+
+        let selectedSymptoms = [];
+        let diagnosisResults = [];
+
+        // Initialize symptoms grid
+        function initializeSymptoms() {
+            const grid = document.getElementById('symptomsGrid');
+            for (const [key, symptom] of Object.entries(symptomsDB)) {
+                const card = document.createElement('div');
+                card.className = 'symptom-card';
+                card.innerHTML = `
+                    <strong>${symptom.name}</strong>
+                    <br>
+                    <small>${symptom.urdu}</small>
+                `;
+                card.onclick = () => toggleSymptom(key, card);
+                grid.appendChild(card);
             }
         }
-    
-    def color_text(self, text, color):
-        """Add color to text"""
-        return f"{self.colors.get(color, '')}{text}{self.colors['END']}"
-    
-    def clear_screen(self):
-        """Clear terminal screen"""
-        os.system('clear' if os.name == 'posix' else 'cls')
-    
-    def animate_text(self, text, delay=0.03, color='WHITE'):
-        """Animate text printing with color"""
-        colored_text = self.color_text(text, color)
-        for char in colored_text:
-            print(char, end='', flush=True)
-            time.sleep(delay)
-        print()
-    
-    def loading_animation(self, duration=2, message="Processing"):
-        """Show loading animation with color"""
-        animation_chars = ["🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛"]
-        start_time = time.time()
-        i = 0
-        
-        while time.time() - start_time < duration:
-            color = ['RED', 'GREEN', 'YELLOW', 'BLUE', 'PURPLE', 'CYAN'][i % 6]
-            animated_char = self.color_text(animation_chars[i % len(animation_chars)], color)
-            print(f"\r{message} {animated_char}", end='', flush=True)
-            time.sleep(0.2)
-            i += 1
-        print("\r" + " " * 50 + "\r", end='', flush=True)
-    
-    def show_welcome(self):
-        """Show animated welcome message in full screen"""
-        self.clear_screen()
-        
-        welcome_text = """
-╔══════════════════════════════════════════════════════════════╗
-║                   🏥 MEDICAL DIAGNOSIS SYSTEM 🏥             ║
-║                  Complete Health Analysis                   ║
-╚══════════════════════════════════════════════════════════════╝
-        """
-        self.animate_text(welcome_text, 0.01, 'CYAN')
-        time.sleep(1)
-    
-    def get_patient_info(self):
-        """Get patient information with animation"""
-        print("\n")
-        self.animate_text("📝 Patient Information Form:", 0.02, 'CYAN')
-        print("=" * 40)
-        
-        patient_name = input("\n👤 Enter Patient Name: ")
-        
-        # Show fixed doctor name
-        self.animate_text(f"👨‍⚕️ Doctor: {self.doctor_name}", 0.02, 'BLUE')
-        
-        return patient_name
-    
-    def show_symptoms_menu(self):
-        """Display animated symptoms menu with colors"""
-        print("\n")
-        self.animate_text("📋 Available Symptoms:", 0.02, 'PURPLE')
-        print("=" * 50)
-        
-        symptoms_list = list(self.symptoms_db.keys())
-        colors = ['GREEN', 'YELLOW', 'BLUE', 'CYAN', 'PURPLE']
-        
-        for i, symptom in enumerate(symptoms_list, 1):
-            color = colors[i % len(colors)]
-            urdu_name = self.symptoms_db[symptom]['urdu_name']
-            symptom_text = f"{i:2d}. {symptom:15} ({urdu_name})"
-            self.animate_text(symptom_text, 0.01, color)
-    
-    def get_custom_symptoms(self):
-        """Get custom symptoms from patient"""
-        print("\n")
-        self.animate_text("🤒 What symptoms are you experiencing?", 0.02, 'RED')
-        self.animate_text("آپ کو کون سی علامات ہیں؟", 0.02, 'YELLOW')
-        
-        # Show available symptoms
-        self.show_symptoms_menu()
-        
-        print("\n")
-        self.animate_text("💡 Tip: You can type in English or Urdu", 0.02, 'GREEN')
-        self.animate_text("💡 تجویز: آپ انگریزی یا اردو میں لکھ سکتے ہیں", 0.02, 'GREEN')
-        self.animate_text("💡 EXAMPLE: fever, cough, headache OR بخار, کھانسی", 0.02, 'YELLOW')
-        
-        symptom_input = input(self.color_text("\n🎯 Enter your symptoms (comma separated): ", 'BOLD'))
-        
-        return symptom_input
-    
-    def translate_symptom(self, user_input):
-        """Translate Urdu symptom to English"""
-        user_input_lower = user_input.strip().lower()
-        
-        # Urdu to English mapping
-        urdu_mapping = {
-            'بخار': 'fever',
-            'کھانسی': 'cough',
-            'سر درد': 'headache', 
-            'پیٹ درد': 'stomach pain',
-            'سینے میں درد': 'chest pain',
-            'نزلہ': 'cold',
-            'کمزوری': 'weakness',
-            'الٹی': 'vomiting',
-            'اسہال': 'diarrhea',
-            'خارش': 'rash',
-            'جسم میں درد': 'body pain',
-            'گلے کی خراش': 'sore throat'
+
+        function toggleSymptom(symptom, element) {
+            const index = selectedSymptoms.indexOf(symptom);
+            if (index === -1) {
+                selectedSymptoms.push(symptom);
+                element.classList.add('selected');
+            } else {
+                selectedSymptoms.splice(index, 1);
+                element.classList.remove('selected');
+            }
         }
-        
-        # Check if input is already in English
-        if user_input_lower in self.symptoms_db:
-            return user_input_lower
-        
-        # Check Urdu to English mapping
-        for urdu_symptom, english_symptom in urdu_mapping.items():
-            if urdu_symptom in user_input:
-                return english_symptom
-        
-        # Check for similar English names
-        for english_symptom in self.symptoms_db.keys():
-            if english_symptom in user_input_lower:
-                return english_symptom
-        
-        return None
-    
-    def diagnose_symptoms(self, symptoms_list):
-        """Diagnose multiple symptoms with colorful interface"""
-        all_diseases = []
-        all_medicines = []
-        all_precautions = []
-        
-        for symptom in symptoms_list:
-            translated_symptom = self.translate_symptom(symptom)
-            if translated_symptom and translated_symptom in self.symptoms_db:
-                symptom_info = self.symptoms_db[translated_symptom]
-                
-                self.animate_text(f"\n🔍 Analyzing: {symptom} ({symptom_info['urdu_name']})", 0.02, 'CYAN')
-                self.loading_animation(2, "Diagnosing")
-                
-                # Show disease options
-                self.animate_text(f"📊 Possible diseases for {symptom}:", 0.02, 'PURPLE')
-                for i, disease in enumerate(symptom_info['diseases'], 1):
-                    color = ['GREEN', 'YELLOW', 'BLUE', 'CYAN', 'PURPLE'][i % 5]
-                    self.animate_text(f"   {i}. {disease}", 0.01, color)
-                
-                try:
-                    choice = int(input(self.color_text(f"\n🎯 Select disease (1-{len(symptom_info['diseases'])}): ", 'BOLD')))
-                    if 1 <= choice <= len(symptom_info['diseases']):
-                        selected_disease = symptom_info['diseases'][choice-1]
-                        medicine = symptom_info['medicines'][selected_disease]
-                        precaution = symptom_info['precautions'][selected_disease]
-                        
-                        all_diseases.append(f"{selected_disease} (from {symptom})")
-                        all_medicines.append(f"For {symptom}: {medicine}")
-                        all_precautions.append(f"Precautions: {precaution}")
-                        
-                        self.animate_text(f"✅ Selected: {selected_disease}", 0.02, 'GREEN')
-                    else:
-                        self.animate_text("❌ Invalid choice!", 0.02, 'RED')
-                except ValueError:
-                    self.animate_text("❌ Please enter a valid number!", 0.02, 'RED')
-            else:
-                self.animate_text(f"❌ Unknown symptom: {symptom}", 0.02, 'RED')
-        
-        return all_diseases, all_medicines, all_precautions
-    
-    def create_text_report(self, patient_name, symptoms, diseases, medicines, precautions):
-        """Create a detailed colorful text report"""
-        current_time = datetime.datetime.now()
-        
-        report_content = f"""
-{self.color_text('╔══════════════════════════════════════════════════════════════╗', 'CYAN')}
-{self.color_text('║                    MEDICAL DIAGNOSIS REPORT                 ║', 'BOLD')}
-{self.color_text('║                  Developed by Wraith Developer              ║', 'YELLOW')}
-{self.color_text('╚══════════════════════════════════════════════════════════════╝', 'CYAN')}
 
-{self.color_text('📅', 'BLUE')} {self.color_text('Date & Time:', 'BOLD')} {current_time.strftime("%Y-%m-%d %H:%M:%S")}
+        // Diagnosis process
+        document.getElementById('diagnoseBtn').onclick = function() {
+            const patientName = document.getElementById('patientName').value;
+            
+            if (!patientName) {
+                showError('Please enter patient name');
+                return;
+            }
 
-{self.color_text('👤 PATIENT INFORMATION:', 'CYAN')}
-{self.color_text('────────────────────────────────────────────────────────────────', 'CYAN')}
-   {self.color_text('Patient Name:', 'BOLD')} {patient_name}
-   {self.color_text('Doctor Name:', 'BOLD')} {self.doctor_name}
+            if (selectedSymptoms.length === 0) {
+                showError('Please select at least one symptom');
+                return;
+            }
 
-{self.color_text('🤒 SYMPTOMS REPORTED:', 'RED')}
-{self.color_text('────────────────────────────────────────────────────────────────', 'RED')}
-"""
-        for symptom in symptoms:
-            report_content += f"   • {symptom}\n"
-        
-        report_content += f"""
-{self.color_text('🩺 DIAGNOSIS RESULTS:', 'PURPLE')}
-{self.color_text('────────────────────────────────────────────────────────────────', 'PURPLE')}
-"""
-        
-        for disease in diseases:
-            report_content += f"   • {disease}\n"
-        
-        report_content += f"""
-{self.color_text('💊 RECOMMENDED TREATMENT:', 'GREEN')}
-{self.color_text('────────────────────────────────────────────────────────────────', 'GREEN')}
-"""
-        
-        for medicine in medicines:
-            report_content += f"   • {medicine}\n"
-        
-        report_content += f"""
-{self.color_text('🛡️  PRECAUTIONS & PREVENTIONS:', 'YELLOW')}
-{self.color_text('────────────────────────────────────────────────────────────────', 'YELLOW')}
-"""
-        
-        for precaution in precautions:
-            report_content += f"   • {precaution}\n"
-        
-        report_content += f"""
-{self.color_text('⚠️  IMPORTANT NOTES:', 'RED')}
-{self.color_text('────────────────────────────────────────────────────────────────', 'RED')}
-   • This is an automated diagnosis system
-   • Please consult with a qualified healthcare professional
-   • For emergencies, contact your local hospital immediately
-   • Follow dosage instructions carefully
-   • Complete the full course of medication
+            startDiagnosis(patientName, selectedSymptoms);
+        };
 
-{self.color_text('📝 URDU TRANSLATION:', 'BLUE')}
-{self.color_text('────────────────────────────────────────────────────────────────', 'BLUE')}
-   یہ ایک خودکار تشخیص نظام ہے
-   براہ کرم مناسب طبی مشورے کے لیے کسی مستند ڈاکٹر سے رجوع کریں
-   ایمرجنسی کی صورت میں فوری طور پر ہسپتال سے رابطہ کریں
-   دوائیوں کی خوراک احتیاط سے استعمال کریں
-   دوا کا مکمل کورس ضرور پورا کریں
+        function startDiagnosis(patientName, symptoms) {
+            const resultSection = document.getElementById('resultSection');
+            const resultsDiv = document.getElementById('diagnosisResults');
+            
+            resultSection.style.display = 'block';
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing symptoms and generating diagnosis...</p>
+                </div>
+            `;
 
-{self.color_text('🔬', 'CYAN')} {self.color_text('System Developed by: Wraith Developer', 'BOLD')}
-"""
-        
-        # Save text file
-        filename = f"medical_report_{patient_name.replace(' ', '_')}_{current_time.strftime('%Y%m%d_%H%M%S')}.txt"
-        
-        with open(filename, 'w', encoding='utf-8') as file:
-            file.write(report_content)
-        
-        return filename
-    
-    def run(self):
-        """Main program loop"""
-        self.show_welcome()
-        
-        while True:
-            try:
-                # Get patient information
-                patient_name = self.get_patient_info()
+            // Simulate diagnosis process
+            setTimeout(() => {
+                generateDiagnosis(patientName, symptoms);
+            }, 2000);
+        }
+
+        function generateDiagnosis(patientName, symptoms) {
+            let resultsHTML = `
+                <div class="success-message">
+                    <h4>✅ Diagnosis Complete!</h4>
+                </div>
                 
-                if not patient_name:
-                    self.animate_text("❌ Patient name is required!", 0.02, 'RED')
-                    continue
-                
-                # Get symptoms
-                symptoms_input = self.get_custom_symptoms()
-                
-                if not symptoms_input:
-                    self.animate_text("❌ Please enter at least one symptom!", 0.02, 'RED')
-                    continue
-                
-                # Process symptoms
-                symptoms_list = [s.strip() for s in symptoms_input.split(',')]
-                symptoms_list = [s for s in symptoms_list if s]  # Remove empty strings
-                
-                self.animate_text(f"\n✅ Symptoms recorded: {', '.join(symptoms_list)}", 0.02, 'GREEN')
-                
-                # Diagnose
-                self.animate_text("\n🩺 Starting diagnosis process...", 0.02, 'CYAN')
-                self.loading_animation(3, "Analyzing symptoms")
-                
-                diseases, medicines, precautions = self.diagnose_symptoms(symptoms_list)
-                
-                if not diseases:
-                    self.animate_text("❌ No valid diagnosis could be made!", 0.02, 'RED')
-                    continue
-                
-                # Show results
-                print("\n")
-                self.animate_text("═" * 60, 0.01, 'GREEN')
-                self.animate_text("🎉 DIAGNOSIS COMPLETE! 🎉", 0.03, 'BOLD')
-                self.animate_text("═" * 60, 0.01, 'GREEN')
-                
-                print(f"\n{self.color_text('👤', 'CYAN')} {self.color_text('Patient:', 'BOLD')} {patient_name}")
-                print(f"{self.color_text('👨‍⚕️', 'BLUE')} {self.color_text('Doctor:', 'BOLD')} {self.doctor_name}")
-                print(f"{self.color_text('🤒', 'RED')} {self.color_text('Symptoms:', 'BOLD')} {', '.join(symptoms_list)}")
-                
-                print(f"\n{self.color_text('🩺 Diagnosed Diseases:', 'PURPLE')}")
-                for disease in diseases:
-                    print(f"   {self.color_text('✅', 'GREEN')} {disease}")
-                
-                print(f"\n{self.color_text('💊 Recommended Treatment:', 'GREEN')}")
-                for medicine in medicines:
-                    print(f"   {self.color_text('💊', 'YELLOW')} {medicine}")
-                
-                print(f"\n{self.color_text('🛡️  Precautions & Prevention:', 'YELLOW')}")
-                for precaution in precautions:
-                    print(f"   {self.color_text('🛡️', 'BLUE')} {precaution}")
-                
-                # Create report
-                self.animate_text("\n📄 Generating medical report...", 0.02, 'CYAN')
-                self.loading_animation(2, "Creating report")
-                
-                report_filename = self.create_text_report(patient_name, symptoms_list, diseases, medicines, precautions)
-                
-                print(f"\n{self.color_text('📁', 'GREEN')} {self.color_text('Report saved as:', 'BOLD')} {report_filename}")
-                print(f"{self.color_text('📂', 'BLUE')} {self.color_text('Location:', 'BOLD')} {os.path.abspath(report_filename)}")
-                
-                # Ask for another diagnosis
-                print("\n")
-                self.animate_text("─" * 50, 0.01, 'CYAN')
-                another = input(self.color_text("\n🔄 Do you want to create another diagnosis? (y/n): ", 'BOLD')).lower()
-                if another != 'y':
-                    break
+                <div style="margin: 20px 0;">
+                    <strong>Patient:</strong> ${patientName}<br>
+                    <strong>Doctor:</strong> Dr. Wraith Developer<br>
+                    <strong>Date:</strong> ${new Date().toLocaleDateString()}
+                </div>
+
+                <h4>Reported Symptoms:</h4>
+                <ul>
+            `;
+
+            diagnosisResults = [];
+
+            // Generate diagnosis for each symptom
+            symptoms.forEach(symptom => {
+                if (symptomsDB[symptom]) {
+                    const symptomInfo = symptomsDB[symptom];
+                    const randomDisease = symptomInfo.diseases[Math.floor(Math.random() * symptomInfo.diseases.length)];
                     
-            except KeyboardInterrupt:
-                print("\n\n")
-                self.animate_text("❌ Program interrupted by user!", 0.02, 'RED')
-                break
-            except Exception as e:
-                print("\n")
-                self.animate_text(f"❌ An error occurred: {e}", 0.02, 'RED')
-                continue
-        
-        # Farewell message
-        print("\n")
-        self.animate_text("═" * 50, 0.01, 'CYAN')
-        self.animate_text("🙏 Thank you for using Medical Diagnosis System!", 0.02, 'GREEN')
-        self.animate_text("میڈیکل ڈائیگنوسس سسٹم استعمال کرنے کا شکریہ!", 0.02, 'YELLOW')
-        self.animate_text(f"👨‍⚕️ Doctor: {self.doctor_name}", 0.02, 'BLUE')
-        self.animate_text("═" * 50, 0.01, 'CYAN')
-        print("\n")
+                    resultsHTML += `<li>${symptomInfo.name} (${symptomInfo.urdu})</li>`;
+                    
+                    diagnosisResults.push({
+                        symptom: symptomInfo.name,
+                        disease: randomDisease,
+                        treatment: symptomInfo.treatments[randomDisease],
+                        precaution: symptomInfo.precautions[randomDisease]
+                    });
+                }
+            });
 
-# Run the program
-if __name__ == "__main__":
-    try:
-        system = MedicalDiagnosisSystem()
-        system.run()
-        
-    except KeyboardInterrupt:
-        print("\n\n")
-        print(MedicalDiagnosisSystem().color_text("👋 Program terminated by user. Goodbye!", 'YELLOW'))
-    except Exception as e:
-        print("\n")
-        print(MedicalDiagnosisSystem().color_text(f"💥 An unexpected error occurred: {e}", 'RED'))
+            resultsHTML += `</ul><h4>Diagnosis & Treatment:</h4>`;
+
+            diagnosisResults.forEach(result => {
+                resultsHTML += `
+                    <div style="margin: 15px 0; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #3498db;">
+                        <strong>${result.symptom}:</strong> ${result.disease}<br>
+                        <strong>💊 Treatment:</strong> ${result.treatment}<br>
+                        <strong>🛡️ Precautions:</strong> ${result.precaution}
+                    </div>
+                `;
+            });
+
+            resultsHTML += `
+                <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
+                    <strong>Important Note:</strong> This is an automated diagnosis. Please consult with a qualified healthcare professional for proper medical advice.
+                </div>
+            `;
+
+            document.getElementById('diagnosisResults').innerHTML = resultsHTML;
+            generateReport(patientName);
+        }
+
+        function generateReport(patientName) {
+            const reportSection = document.getElementById('reportSection');
+            const reportContent = document.getElementById('reportContent');
+            
+            let reportHTML = `
+                <strong>MEDICAL DIAGNOSIS REPORT</strong><br><br>
+                <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
+                <strong>Patient:</strong> ${patientName}<br>
+                <strong>Doctor:</strong> Dr. Wraith Developer<br><br>
+                
+                <strong>DIAGNOSIS RESULTS:</strong><br>
+            `;
+
+            diagnosisResults.forEach(result => {
+                reportHTML += `
+                    • ${result.symptom}: ${result.disease}<br>
+                    &nbsp;&nbsp;Treatment: ${result.treatment}<br>
+                    &nbsp;&nbsp;Precautions: ${result.precaution}<br><br>
+                `;
+            });
+
+            reportHTML += `
+                <strong>DISCLAIMER:</strong><br>
+                This is an automated diagnosis system for educational purposes only. 
+                Always consult qualified healthcare professionals for medical advice.
+            `;
+
+            reportContent.innerHTML = reportHTML;
+            reportSection.style.display = 'block';
+        }
+
+        function downloadReport() {
+            const reportContent = document.getElementById('reportContent').innerText;
+            const blob = new Blob([reportContent], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `medical_report_${new Date().getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function showError(message) {
+            const resultSection = document.getElementById('resultSection');
+            resultSection.style.display = 'block';
+            document.getElementById('diagnosisResults').innerHTML = `
+                <div class="error-message">
+                    ${message}
+                </div>
+            `;
+        }
+
+        function showSuccess(message) {
+            const resultSection = document.getElementById('resultSection');
+            resultSection.style.display = 'block';
+            document.getElementById('diagnosisResults').innerHTML = `
+                <div class="success-message">
+                    ${message}
+                </div>
+            `;
+        }
+
+        // Initialize the application
+        window.onload = initializeSymptoms;
+    </script>
+</body>
+</html>
