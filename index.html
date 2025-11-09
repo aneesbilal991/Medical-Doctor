@@ -195,26 +195,6 @@
             margin-top: 20px;
         }
 
-        .disease-option {
-            background: white;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 2px solid #e9ecef;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .disease-option:hover {
-            border-color: #3498db;
-        }
-
-        .disease-option.selected {
-            background: #3498db;
-            color: white;
-            border-color: #2980b9;
-        }
-
         .success-message {
             background: #d4edda;
             color: #155724;
@@ -240,13 +220,35 @@
             margin-top: 20px;
             border: 2px dashed #dee2e6;
         }
+
+        .diagnosis-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .treatment-info {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
+
+        .precaution-info {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>🏥 Medical Diagnosis System</h1>
-            <p>AI-Powered Medical Diagnosis & Treatment Recommendations</p>
+            <p>Complete AI-Powered Medical Diagnosis with Treatment & Precautions</p>
         </div>
 
         <div class="content">
@@ -265,11 +267,6 @@
                         </div>
                     </div>
 
-                    <div id="diseaseSelection" style="display: none;">
-                        <h3>Select Disease for <span id="currentSymptom"></span>:</h3>
-                        <div id="diseaseOptions"></div>
-                    </div>
-
                     <button type="button" id="diagnoseBtn" class="btn">Start Diagnosis</button>
                 </form>
 
@@ -278,7 +275,7 @@
                     <div id="diagnosisResults"></div>
                     
                     <div class="report-section" id="reportSection" style="display: none;">
-                        <h4>Medical Report</h4>
+                        <h4>📄 Medical Report</h4>
                         <div id="reportContent"></div>
                         <button class="btn" onclick="downloadReport()" style="margin-top: 15px;">Download Report</button>
                     </div>
@@ -287,16 +284,22 @@
 
             <div class="info-section">
                 <h2>About This System</h2>
-                <p>This AI-powered medical diagnosis system provides preliminary health assessments based on reported symptoms.</p>
+                <p>Complete medical diagnosis system with 12 symptoms, treatment recommendations, and prevention guidelines.</p>
                 
-                <h3>Features:</h3>
+                <h3>📋 Available Symptoms:</h3>
                 <ul class="feature-list">
-                    <li>Multi-language Support (English/Urdu)</li>
-                    <li>12+ Common Symptoms Analysis</li>
-                    <li>60+ Disease Combinations</li>
-                    <li>Treatment Recommendations</li>
-                    <li>Prevention Guidelines</li>
-                    <li>Professional Medical Reports</li>
+                    <li>Fever (بخار) - 5 diseases</li>
+                    <li>Cough (کھانسی) - 5 diseases</li>
+                    <li>Headache (سر درد) - 5 diseases</li>
+                    <li>Stomach Pain (پیٹ درد) - 5 diseases</li>
+                    <li>Chest Pain (سینے میں درد) - 5 diseases</li>
+                    <li>Cold (نزلہ) - 5 diseases</li>
+                    <li>Weakness (کمزوری) - 5 diseases</li>
+                    <li>Vomiting (الٹی) - 5 diseases</li>
+                    <li>Diarrhea (اسہال) - 5 diseases</li>
+                    <li>Rash (خارش) - 5 diseases</li>
+                    <li>Body Pain (جسم میں درد) - 5 diseases</li>
+                    <li>Sore Throat (گلے کی خراش) - 5 diseases</li>
                 </ul>
 
                 <div class="doctor-info">
@@ -314,7 +317,7 @@
     </div>
 
     <script>
-        // Complete medical database
+        // Complete medical database with ALL 12 symptoms
         const symptomsDB = {
             'fever': {
                 name: 'Fever',
@@ -391,6 +394,158 @@
                     'Ulcer': 'Avoid painkillers, Spicy food, Stress',
                     'Irritable Bowel': 'High fiber diet, Regular meals, Stress control'
                 }
+            },
+            'chest pain': {
+                name: 'Chest Pain',
+                urdu: 'سینے میں درد',
+                diseases: ['Angina', 'Acid Reflux', 'Anxiety', 'Heart Attack', 'Pulmonary Embolism'],
+                treatments: {
+                    'Angina': 'Nitroglycerin, Emergency care, Lifestyle changes',
+                    'Acid Reflux': 'Antacids, Proton pump inhibitors, Diet changes',
+                    'Anxiety': 'Relaxation techniques, Counseling, Medication',
+                    'Heart Attack': 'EMERGENCY - Call ambulance, Aspirin, Hospital',
+                    'Pulmonary Embolism': 'EMERGENCY - Hospitalization, Blood thinners'
+                },
+                precautions: {
+                    'Angina': 'Avoid exertion, Stop smoking, Healthy diet',
+                    'Acid Reflux': 'Avoid fatty foods, Eat small meals, No late meals',
+                    'Anxiety': 'Meditation, Regular exercise, Avoid caffeine',
+                    'Heart Attack': 'Immediate medical help, Chew aspirin, Rest',
+                    'Pulmonary Embolism': 'Emergency care, Avoid long sitting, Movement'
+                }
+            },
+            'cold': {
+                name: 'Cold',
+                urdu: 'نزلہ',
+                diseases: ['Common Cold', 'Allergic Rhinitis', 'Sinus Infection', 'Flu', 'COVID-19'],
+                treatments: {
+                    'Common Cold': 'Decongestants, Vitamin C, Rest',
+                    'Allergic Rhinitis': 'Antihistamines, Nasal spray, Avoid allergens',
+                    'Sinus Infection': 'Antibiotics, Steam inhalation, Pain relievers',
+                    'Flu': 'Antiviral drugs, Rest, Hydration',
+                    'COVID-19': 'Isolation, Symptomatic treatment, Medical care'
+                },
+                precautions: {
+                    'Common Cold': 'Wash hands, Avoid sick people, Stay warm',
+                    'Allergic Rhinitis': 'Avoid pollen, Dust, Animal dander',
+                    'Sinus Infection': 'Steam inhalation, Hydration, Rest',
+                    'Flu': 'Vaccination, Avoid crowds, Good hygiene',
+                    'COVID-19': 'Mask, Social distancing, Sanitization'
+                }
+            },
+            'weakness': {
+                name: 'Weakness',
+                urdu: 'کمزوری',
+                diseases: ['Anemia', 'Fatigue Syndrome', 'Vitamin Deficiency', 'Diabetes', 'Thyroid Issues'],
+                treatments: {
+                    'Anemia': 'Iron supplements, Balanced diet, Vitamin B12',
+                    'Fatigue Syndrome': 'Rest, Stress management, Gradual exercise',
+                    'Vitamin Deficiency': 'Multivitamins, Proper nutrition, Sunlight',
+                    'Diabetes': 'Blood sugar control, Medication, Diet management',
+                    'Thyroid Issues': 'Thyroid medication, Regular monitoring'
+                },
+                precautions: {
+                    'Anemia': 'Iron-rich diet, Vitamin C, Regular checkups',
+                    'Fatigue Syndrome': 'Regular sleep, Balanced diet, Stress reduction',
+                    'Vitamin Deficiency': 'Balanced diet, Sun exposure, Supplements',
+                    'Diabetes': 'Regular monitoring, Diet control, Exercise',
+                    'Thyroid Issues': 'Regular medication, Checkups, Balanced diet'
+                }
+            },
+            'vomiting': {
+                name: 'Vomiting',
+                urdu: 'الٹی',
+                diseases: ['Food Poisoning', 'Gastroenteritis', 'Migraine', 'Pregnancy', 'Motion Sickness'],
+                treatments: {
+                    'Food Poisoning': 'Hydration, Rest, Anti-emetics',
+                    'Gastroenteritis': 'ORS, Rest, Bland diet',
+                    'Migraine': 'Anti-emetics, Rest, Pain relief',
+                    'Pregnancy': 'Small frequent meals, Ginger, Medical advice',
+                    'Motion Sickness': 'Anti-emetics, Avoid reading in vehicle'
+                },
+                precautions: {
+                    'Food Poisoning': 'Fresh food, Clean water, Hand hygiene',
+                    'Gastroenteritis': 'ORS, Light diet, Rest',
+                    'Migraine': 'Avoid triggers, Rest, Dark room',
+                    'Pregnancy': 'Small meals, Avoid strong smells, Rest',
+                    'Motion Sickness': 'Look at horizon, Fresh air, Light meals'
+                }
+            },
+            'diarrhea': {
+                name: 'Diarrhea',
+                urdu: 'اسہال',
+                diseases: ['Gastroenteritis', 'Food Poisoning', 'Irritable Bowel', 'Infection', 'Lactose Intolerance'],
+                treatments: {
+                    'Gastroenteritis': 'ORS, Rest, Avoid dairy',
+                    'Food Poisoning': 'Hydration, Antibiotics if bacterial',
+                    'Irritable Bowel': 'Diet changes, Stress management',
+                    'Infection': 'Antibiotics, Hydration, Medical care',
+                    'Lactose Intolerance': 'Avoid dairy, Lactase enzymes'
+                },
+                precautions: {
+                    'Gastroenteritis': 'ORS, Light diet, Hygiene',
+                    'Food Poisoning': 'Clean food, Water, Utensils',
+                    'Irritable Bowel': 'Identify triggers, Stress management',
+                    'Infection': 'Medical care, Hydration, Rest',
+                    'Lactose Intolerance': 'Dairy-free diet, Lactose-free products'
+                }
+            },
+            'rash': {
+                name: 'Rash',
+                urdu: 'خارش',
+                diseases: ['Allergy', 'Eczema', 'Fungal Infection', 'Measles', 'Contact Dermatitis'],
+                treatments: {
+                    'Allergy': 'Antihistamines, Avoid allergens, Creams',
+                    'Eczema': 'Moisturizers, Steroid creams, Avoid triggers',
+                    'Fungal Infection': 'Antifungal creams, Oral medication',
+                    'Measles': 'Symptomatic treatment, Rest, Isolation',
+                    'Contact Dermatitis': 'Avoid irritants, Steroid creams'
+                },
+                precautions: {
+                    'Allergy': 'Identify allergens, Avoid triggers, Clean environment',
+                    'Eczema': 'Moisturize, Avoid harsh soaps, Cotton clothes',
+                    'Fungal Infection': 'Keep dry, Clean clothes, Avoid sharing',
+                    'Measles': 'Vaccination, Isolation, Rest',
+                    'Contact Dermatitis': 'Avoid irritants, Protective gloves'
+                }
+            },
+            'body pain': {
+                name: 'Body Pain',
+                urdu: 'جسم میں درد',
+                diseases: ['Viral Infection', 'Arthritis', 'Fibromyalgia', 'Flu', 'Vitamin Deficiency'],
+                treatments: {
+                    'Viral Infection': 'Pain relievers, Rest, Hydration',
+                    'Arthritis': 'Anti-inflammatory drugs, Physical therapy',
+                    'Fibromyalgia': 'Pain management, Exercise, Stress reduction',
+                    'Flu': 'Antiviral medication, Rest, Pain relievers',
+                    'Vitamin Deficiency': 'Vitamin supplements, Balanced diet'
+                },
+                precautions: {
+                    'Viral Infection': 'Rest, Hydration, Balanced diet',
+                    'Arthritis': 'Regular exercise, Weight management, Joint care',
+                    'Fibromyalgia': 'Stress management, Gentle exercise, Sleep',
+                    'Flu': 'Rest, Hydration, Vaccination',
+                    'Vitamin Deficiency': 'Balanced diet, Sun exposure, Supplements'
+                }
+            },
+            'sore throat': {
+                name: 'Sore Throat',
+                urdu: 'گلے کی خراش',
+                diseases: ['Strep Throat', 'Tonsillitis', 'Viral Pharyngitis', 'Allergy', 'Acid Reflux'],
+                treatments: {
+                    'Strep Throat': 'Antibiotics, Pain relievers, Warm salt water',
+                    'Tonsillitis': 'Antibiotics, Pain medication, Rest',
+                    'Viral Pharyngitis': 'Pain relievers, Warm liquids, Rest',
+                    'Allergy': 'Antihistamines, Avoid allergens',
+                    'Acid Reflux': 'Antacids, Diet modification, Elevate head'
+                },
+                precautions: {
+                    'Strep Throat': 'Rest, Warm liquids, Avoid cold drinks',
+                    'Tonsillitis': 'Soft diet, Rest, Hydration',
+                    'Viral Pharyngitis': 'Warm liquids, Rest, Avoid smoking',
+                    'Allergy': 'Avoid allergens, Clean environment',
+                    'Acid Reflux': 'Small meals, Avoid spicy food, No late meals'
+                }
             }
         };
 
@@ -463,16 +618,17 @@
             let resultsHTML = `
                 <div class="success-message">
                     <h4>✅ Diagnosis Complete!</h4>
+                    <p>Found ${symptoms.length} symptoms with complete treatment plan</p>
                 </div>
                 
-                <div style="margin: 20px 0;">
+                <div style="margin: 20px 0; padding: 15px; background: #e3f2fd; border-radius: 8px;">
                     <strong>Patient:</strong> ${patientName}<br>
                     <strong>Doctor:</strong> Dr. Wraith Developer<br>
                     <strong>Date:</strong> ${new Date().toLocaleDateString()}
                 </div>
 
-                <h4>Reported Symptoms:</h4>
-                <ul>
+                <h4>📋 Reported Symptoms:</h4>
+                <ul style="margin: 10px 0 20px 20px;">
             `;
 
             diagnosisResults = [];
@@ -483,10 +639,11 @@
                     const symptomInfo = symptomsDB[symptom];
                     const randomDisease = symptomInfo.diseases[Math.floor(Math.random() * symptomInfo.diseases.length)];
                     
-                    resultsHTML += `<li>${symptomInfo.name} (${symptomInfo.urdu})</li>`;
+                    resultsHTML += `<li><strong>${symptomInfo.name}</strong> (${symptomInfo.urdu})</li>`;
                     
                     diagnosisResults.push({
                         symptom: symptomInfo.name,
+                        urdu: symptomInfo.urdu,
                         disease: randomDisease,
                         treatment: symptomInfo.treatments[randomDisease],
                         precaution: symptomInfo.precautions[randomDisease]
@@ -494,21 +651,33 @@
                 }
             });
 
-            resultsHTML += `</ul><h4>Diagnosis & Treatment:</h4>`;
+            resultsHTML += `</ul><h4>🩺 Diagnosis & Treatment Plan:</h4>`;
 
             diagnosisResults.forEach(result => {
                 resultsHTML += `
-                    <div style="margin: 15px 0; padding: 15px; background: white; border-radius: 8px; border-left: 4px solid #3498db;">
-                        <strong>${result.symptom}:</strong> ${result.disease}<br>
-                        <strong>💊 Treatment:</strong> ${result.treatment}<br>
-                        <strong>🛡️ Precautions:</strong> ${result.precaution}
+                    <div class="diagnosis-item">
+                        <strong>${result.symptom} (${result.urdu})</strong><br>
+                        <strong>Diagnosed Disease:</strong> ${result.disease}
+                        
+                        <div class="treatment-info">
+                            <strong>💊 Treatment:</strong><br>
+                            ${result.treatment}
+                        </div>
+                        
+                        <div class="precaution-info">
+                            <strong>🛡️ Precautions:</strong><br>
+                            ${result.precaution}
+                        </div>
                     </div>
                 `;
             });
 
             resultsHTML += `
                 <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 5px;">
-                    <strong>Important Note:</strong> This is an automated diagnosis. Please consult with a qualified healthcare professional for proper medical advice.
+                    <strong>⚠️ Important Medical Disclaimer:</strong><br>
+                    This is an automated diagnosis system for educational purposes only. 
+                    Always consult with qualified healthcare professionals for proper medical advice, 
+                    diagnosis, and treatment. Do not use this information for emergency medical situations.
                 </div>
             `;
 
@@ -521,26 +690,46 @@
             const reportContent = document.getElementById('reportContent');
             
             let reportHTML = `
-                <strong>MEDICAL DIAGNOSIS REPORT</strong><br><br>
-                <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
-                <strong>Patient:</strong> ${patientName}<br>
-                <strong>Doctor:</strong> Dr. Wraith Developer<br><br>
+                <div style="border-bottom: 2px solid #3498db; padding-bottom: 10px; margin-bottom: 15px;">
+                    <h3 style="color: #2c3e50; text-align: center;">MEDICAL DIAGNOSIS REPORT</h3>
+                </div>
                 
-                <strong>DIAGNOSIS RESULTS:</strong><br>
+                <div style="margin-bottom: 15px;">
+                    <strong>Date:</strong> ${new Date().toLocaleDateString()}<br>
+                    <strong>Patient Name:</strong> ${patientName}<br>
+                    <strong>Doctor:</strong> Dr. Wraith Developer<br>
+                    <strong>System:</strong> AI-Powered Medical Diagnosis System
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <strong>SYMPTOMS REPORTED:</strong><br>
+                    ${diagnosisResults.map(result => `${result.symptom} (${result.urdu})`).join(', ')}
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <strong>DETAILED DIAGNOSIS:</strong>
             `;
 
             diagnosisResults.forEach(result => {
                 reportHTML += `
-                    • ${result.symptom}: ${result.disease}<br>
-                    &nbsp;&nbsp;Treatment: ${result.treatment}<br>
-                    &nbsp;&nbsp;Precautions: ${result.precaution}<br><br>
+                    <div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                        <strong>${result.symptom}:</strong> ${result.disease}<br>
+                        <strong>Treatment:</strong> ${result.treatment}<br>
+                        <strong>Precautions:</strong> ${result.precaution}
+                    </div>
                 `;
             });
 
             reportHTML += `
-                <strong>DISCLAIMER:</strong><br>
-                This is an automated diagnosis system for educational purposes only. 
-                Always consult qualified healthcare professionals for medical advice.
+                </div>
+                
+                <div style="padding: 10px; background: #fff3cd; border-radius: 5px; font-size: 0.9em;">
+                    <strong>DISCLAIMER:</strong><br>
+                    This report is generated by an automated system for educational and preliminary purposes only. 
+                    It is not a substitute for professional medical advice, diagnosis, or treatment. 
+                    Always seek the advice of qualified healthcare providers with any questions you may have regarding medical conditions.
+                    In case of emergency, contact your local hospital immediately.
+                </div>
             `;
 
             reportContent.innerHTML = reportHTML;
@@ -548,12 +737,33 @@
         }
 
         function downloadReport() {
-            const reportContent = document.getElementById('reportContent').innerText;
-            const blob = new Blob([reportContent], { type: 'text/plain' });
+            let reportText = `MEDICAL DIAGNOSIS REPORT\n`;
+            reportText += `Date: ${new Date().toLocaleDateString()}\n`;
+            reportText += `Patient: ${document.getElementById('patientName').value}\n`;
+            reportText += `Doctor: Dr. Wraith Developer\n`;
+            reportText += `System: AI-Powered Medical Diagnosis System\n\n`;
+            
+            reportText += `SYMPTOMS REPORTED:\n`;
+            diagnosisResults.forEach(result => {
+                reportText += `• ${result.symptom} (${result.urdu})\n`;
+            });
+            
+            reportText += `\nDETAILED DIAGNOSIS:\n`;
+            diagnosisResults.forEach(result => {
+                reportText += `\n${result.symptom}:\n`;
+                reportText += `  Disease: ${result.disease}\n`;
+                reportText += `  Treatment: ${result.treatment}\n`;
+                reportText += `  Precautions: ${result.precaution}\n`;
+            });
+            
+            reportText += `\nDISCLAIMER:\n`;
+            reportText += `This is an automated diagnosis for educational purposes only. Consult qualified doctors for medical advice.\n`;
+
+            const blob = new Blob([reportText], { type: 'text/plain' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `medical_report_${new Date().getTime()}.txt`;
+            a.download = `medical_report_${document.getElementById('patientName').value}_${new Date().getTime()}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -565,16 +775,6 @@
             resultSection.style.display = 'block';
             document.getElementById('diagnosisResults').innerHTML = `
                 <div class="error-message">
-                    ${message}
-                </div>
-            `;
-        }
-
-        function showSuccess(message) {
-            const resultSection = document.getElementById('resultSection');
-            resultSection.style.display = 'block';
-            document.getElementById('diagnosisResults').innerHTML = `
-                <div class="success-message">
                     ${message}
                 </div>
             `;
